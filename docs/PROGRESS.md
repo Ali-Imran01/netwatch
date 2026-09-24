@@ -36,3 +36,9 @@ Legend: ✅ done · 🟡 in progress · ⬜ not started
 ## Next up
 
 Week 2 — IPAM & inventory: sites, VLANs, subnets, IPs, devices CRUD; utilization %; CSV import with row-level errors.
+
+### Week 2 decisions (2026-09-24)
+
+- IPv4 only; IPv6 deferred.
+- CSV import is synchronous (no queue); good rows are imported and bad rows are reported with row number and reason.
+- Frontend: full CRUD screens for sites, VLANs, subnets, IPs and devices, plus the import page and utilization bars.
