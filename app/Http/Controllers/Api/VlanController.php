@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Site;
 use App\Models\Vlan;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Validation\Rule;
 
@@ -17,6 +18,11 @@ class VlanController extends InventoryController
     protected function filters(): array
     {
         return ['site_id'];
+    }
+
+    protected function query(): Builder
+    {
+        return Vlan::query()->with('site:id,code');
     }
 
     protected function csvColumns(): array

@@ -25,7 +25,7 @@ class SubnetController extends InventoryController
 
     protected function query(): Builder
     {
-        return Subnet::query()->withCount(['ipAddresses as used_count' => fn ($q) => $q->where('status', '!=', IpStatus::Free->value)]);
+        return Subnet::query()->with('site:id,code')->withCount(['ipAddresses as used_count' => fn ($q) => $q->where('status', '!=', IpStatus::Free->value)]);
     }
 
     protected function present(Model $record): array

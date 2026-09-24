@@ -27,7 +27,7 @@ class IpAddressController extends InventoryController
 
     protected function query(): Builder
     {
-        return IpAddress::query()->with('device:id,name');
+        return IpAddress::query()->with(['device:id,name', 'subnet:id,cidr']);
     }
 
     protected function csvColumns(): array

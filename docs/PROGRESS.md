@@ -50,7 +50,7 @@ Legend: ✅ done · 🟡 in progress · ⬜ not started
 - [x] Feature tests: 13 new, suite 19/19 green
 - [x] CSV import, one CSV per entity (`POST /api/{entity}/import`): valid rows imported, bad rows reported by file row number; 500-row test green (suite 22/22)
 - [x] Demo seeder (`InventorySeeder`): fictional carrier, 6 POPs, 36 devices, ~470 IPs, subnet utilization from ~12% to ~94% (suite 23/23)
-- [ ] Frontend: CRUD screens for the 5 entities, import page, utilization bars
+- [x] Frontend: sidebar layout, one config-driven CRUD page for all 5 entities (create/edit/delete, paging, viewer read-only), CSV import panel with row errors, utilization bars (Vitest 3/3, tsc + build clean). Browser check pending.
 - [ ] Tick Week 2 ✅ when: 500-row CSV imports and bad rows are reported clearly
 
 ### CSV import format

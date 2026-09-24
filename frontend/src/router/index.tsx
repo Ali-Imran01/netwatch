@@ -1,7 +1,10 @@
 import type { ReactNode } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import Layout from '../components/Layout'
 import { useAuth } from '../context/AuthContext'
+import { entities } from '../inventory/entities'
 import Dashboard from '../pages/Dashboard'
+import EntityPage from '../pages/EntityPage'
 import Login from '../pages/Login'
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
@@ -19,13 +22,18 @@ export default function AppRouter() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route
-          path="/"
           element={
             <ProtectedRoute>
-              <Dashboard />
+              <Layout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route path="/" element={<Dashboard />} />
+          {entities.map((e) => (
+            // key forces a fresh page (page number, open dialogs) when switching entity.
+            <Route key={e.path} path={`/inventory/${e.path}`} element={<EntityPage key={e.path} entity={e} />} />
+          ))}
+        </Route>
       </Routes>
     </BrowserRouter>
   )

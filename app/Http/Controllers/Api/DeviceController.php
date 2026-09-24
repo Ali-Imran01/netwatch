@@ -25,7 +25,7 @@ class DeviceController extends InventoryController
 
     protected function query(): Builder
     {
-        return Device::query()->with('mgmtIp:id,address');
+        return Device::query()->with(['site:id,code', 'mgmtIp:id,address']);
     }
 
     protected function csvColumns(): array
