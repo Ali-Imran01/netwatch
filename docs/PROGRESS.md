@@ -7,7 +7,7 @@ Legend: ✅ done · 🟡 in progress · ⬜ not started
 | Week | Milestone | Status | Done when |
 |---|---|---|---|
 | 1 | Foundation | ✅ | Login works, CI green |
-| 2 | IPAM & inventory | 🟡 | Import 500-row CSV, bad rows reported clearly |
+| 2 | IPAM & inventory | ✅ | Import 500-row CSV, bad rows reported clearly |
 | 3 | Check engine | ⬜ | 50 monitors checked every 30s without backlog |
 | 4 | Status & dashboard | ⬜ | Killing a test host flips it to Down live |
 | 5 | Circuits & maintenance | ⬜ | SLA % excludes maintenance windows correctly |
@@ -50,8 +50,8 @@ Legend: ✅ done · 🟡 in progress · ⬜ not started
 - [x] Feature tests: 13 new, suite 19/19 green
 - [x] CSV import, one CSV per entity (`POST /api/{entity}/import`): valid rows imported, bad rows reported by file row number; 500-row test green (suite 22/22)
 - [x] Demo seeder (`InventorySeeder`): fictional carrier, 6 POPs, 36 devices, ~470 IPs, subnet utilization from ~12% to ~94% (suite 23/23)
-- [x] Frontend: sidebar layout, one config-driven CRUD page for all 5 entities (create/edit/delete, paging, viewer read-only), CSV import panel with row errors, utilization bars (Vitest 3/3, tsc + build clean). Browser check pending.
-- [ ] Tick Week 2 ✅ when: 500-row CSV imports and bad rows are reported clearly
+- [x] Frontend: sidebar layout, one config-driven CRUD page for all 5 entities (create/edit/delete, paging, viewer read-only), CSV import panel with row errors, utilization bars (Vitest 3/3, tsc + build clean). Browser check confirmed by user 2026-09-24.
+- [x] Week 2 done: 500-row CSV imports and bad rows are reported clearly
 
 ### CSV import format
 
@@ -66,3 +66,7 @@ Headers are required (any order, extra columns ignored). Rows reference parents 
 | devices | `site_code, name, type, vendor, model, serial, mgmt_ip` |
 
 Response: `{imported, failed, errors: [{row, errors: {column: [messages]}}]}`. Max 2 MB / 5000 rows.
+
+## Next up
+
+Week 3 — Check engine: monitor CRUD; ping, TCP, HTTP, DNS probes; scheduler daemon; Horizon; results stored. Done when 50 monitors are checked every 30s without backlog.
