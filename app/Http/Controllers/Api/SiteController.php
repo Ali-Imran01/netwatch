@@ -13,7 +13,7 @@ class SiteController extends InventoryController
         return Site::class;
     }
 
-    protected function rules(?Model $record): array
+    protected function rules(?Model $record, array $input = []): array
     {
         return [
             'name' => ['required', 'string', 'max:255'],

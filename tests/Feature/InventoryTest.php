@@ -159,3 +159,58 @@ it('refuses to delete a site that still has children', function () {
     $this->deleteJson("/api/sites/{$site->id}")->assertStatus(409);
     expect(Site::find($site->id))->not->toBeNull();
 });
+
+function csvUpload(array $rows, string $name = 'import.csv'): Illuminate\Http\Testing\File
+{
+    $lines = array_map(fn ($r) => implode(',', array_map(fn ($v) => '"'.$v.'"', $r)), $rows);
+
+    return Illuminate\Http\UploadedFile::fake()->createWithContent($name, implode("\n", $lines));
+}
+
+it('imports 500 device rows and reports the bad ones by row number', function () {
+    signIn();
+    Site::factory()->create(['code' => 'KL-01']);
+
+    $rows = [['site_code', 'name', 'type', 'vendor', 'model', 'serial', 'mgmt_ip']];
+    for ($i = 1; $i <= 500; $i++) {
+        $rows[] = ['KL-01', "sw-$i", 'switch', 'Cisco', 'C9300', "SN$i", ''];
+    }
+    $rows[10][2] = 'toaster';        // file row 11: bad type
+    $rows[20][0] = 'NOPE-99';        // file row 21: unknown site
+    $rows[30][1] = 'sw-1';           // file row 31: duplicate of an earlier row in the same file
+    $rows[40][6] = '10.9.9.9';       // file row 41: unknown management IP
+
+    $response = $this->postJson('/api/devices/import', ['file' => csvUpload($rows)])->assertOk();
+
+    $response->assertJsonPath('imported', 496)->assertJsonPath('failed', 4);
+    expect(collect($response->json('errors'))->pluck('row')->all())->toBe([11, 21, 31, 41]);
+    expect(collect($response->json('errors'))->firstWhere('row', 21)['errors'])->toHaveKey('site_code');
+    expect(Device::count())->toBe(496);
+});
+
+it('imports the whole chain sites, VLANs, subnets, IPs and devices', function () {
+    signIn();
+    $post = fn (string $entity, array $rows) => $this->postJson("/api/$entity/import", ['file' => csvUpload($rows)])->assertOk();
+
+    $post('sites', [['name', 'code', 'city', 'country', 'lat', 'lng'], ['KL POP', 'KL-01', 'Kuala Lumpur', 'MY', '3.139', '101.686']])
+        ->assertJsonPath('imported', 1);
+    $post('vlans', [['site_code', 'vid', 'name'], ['KL-01', '100', 'mgmt']])->assertJsonPath('imported', 1);
+    $post('subnets', [['site_code', 'vlan_vid', 'cidr', 'description', 'gateway'], ['KL-01', '100', '10.1.0.0/24', 'Mgmt', '10.1.0.1']])
+        ->assertJsonPath('imported', 1);
+    $post('ip-addresses', [['site_code', 'subnet_cidr', 'address', 'status', 'device_name', 'dns_name'], ['KL-01', '10.1.0.0/24', '10.1.0.5', '', '', 'r1.kl']])
+        ->assertJsonPath('imported', 1);
+    $post('devices', [['site_code', 'name', 'type', 'vendor', 'model', 'serial', 'mgmt_ip'], ['KL-01', 'r1', 'router', '', '', '', '10.1.0.5']])
+        ->assertJsonPath('imported', 1);
+
+    expect(Device::first()->mgmtIp->address)->toBe('10.1.0.5');
+    expect(IpAddress::first()->status)->toBe(IpStatus::Free);
+});
+
+it('rejects a CSV with missing columns and forbids viewers from importing', function () {
+    signIn();
+    $this->postJson('/api/sites/import', ['file' => csvUpload([['name'], ['X']])])
+        ->assertUnprocessable()->assertJsonValidationErrors('file');
+
+    signIn(UserRole::Viewer);
+    $this->postJson('/api/sites/import', ['file' => csvUpload([['name', 'code', 'city', 'country', 'lat', 'lng']])])->assertForbidden();
+});

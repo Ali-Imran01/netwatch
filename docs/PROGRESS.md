@@ -48,7 +48,21 @@ Legend: ✅ done · 🟡 in progress · ⬜ not started
 - [x] Subnet utilization % (non-free addresses / usable hosts; /31 and /32 handled)
 - [x] Delete of a referenced record returns 409
 - [x] Feature tests: 13 new, suite 19/19 green
-- [ ] CSV import with row-level validation errors (500-row test)
+- [x] CSV import, one CSV per entity (`POST /api/{entity}/import`): valid rows imported, bad rows reported by file row number; 500-row test green (suite 22/22)
 - [ ] Demo seeder for inventory data
 - [ ] Frontend: CRUD screens for the 5 entities, import page, utilization bars
 - [ ] Tick Week 2 ✅ when: 500-row CSV imports and bad rows are reported clearly
+
+### CSV import format
+
+Headers are required (any order, extra columns ignored). Rows reference parents by natural key. Import in this order: sites → vlans → subnets → ip-addresses → devices.
+
+| Entity | Columns |
+|---|---|
+| sites | `name, code, city, country, lat, lng` |
+| vlans | `site_code, vid, name` |
+| subnets | `site_code, vlan_vid, cidr, description, gateway` |
+| ip-addresses | `site_code, subnet_cidr, address, status, device_name, dns_name` |
+| devices | `site_code, name, type, vendor, model, serial, mgmt_ip` |
+
+Response: `{imported, failed, errors: [{row, errors: {column: [messages]}}]}`. Max 2 MB / 5000 rows.
