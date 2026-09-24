@@ -10,7 +10,7 @@ it('logs in a seeded user with valid credentials', function () {
         'role' => UserRole::Admin,
     ]);
 
-    $response = $this->postJson('/api/login', [
+    $response = $this->withHeader('Referer', 'http://localhost:5173')->postJson('/api/login', [
         'email' => 'admin@netwatch.test',
         'password' => 'password',
     ]);
