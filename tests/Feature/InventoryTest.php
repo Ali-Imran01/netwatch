@@ -214,3 +214,14 @@ it('rejects a CSV with missing columns and forbids viewers from importing', func
     signIn(UserRole::Viewer);
     $this->postJson('/api/sites/import', ['file' => csvUpload([['name', 'code', 'city', 'country', 'lat', 'lng']])])->assertForbidden();
 });
+
+it('seeds a demo network with varied subnet utilization', function () {
+    $this->seed(Database\Seeders\InventorySeeder::class);
+    signIn();
+
+    expect(Site::count())->toBe(6)->and(Device::count())->toBe(36)->and(Device::whereNull('mgmt_ip_id')->count())->toBe(0);
+
+    $utilization = collect($this->getJson('/api/subnets?per_page=100')->json('data'))
+        ->where('cidr', '!=', null)->filter(fn ($s) => str_ends_with($s['cidr'], '.30.0/25'))->pluck('utilization');
+    expect($utilization->max())->toBeGreaterThan(90)->and($utilization->min())->toBeLessThan(15);
+});

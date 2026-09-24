@@ -49,7 +49,7 @@ Legend: ✅ done · 🟡 in progress · ⬜ not started
 - [x] Delete of a referenced record returns 409
 - [x] Feature tests: 13 new, suite 19/19 green
 - [x] CSV import, one CSV per entity (`POST /api/{entity}/import`): valid rows imported, bad rows reported by file row number; 500-row test green (suite 22/22)
-- [ ] Demo seeder for inventory data
+- [x] Demo seeder (`InventorySeeder`): fictional carrier, 6 POPs, 36 devices, ~470 IPs, subnet utilization from ~12% to ~94% (suite 23/23)
 - [ ] Frontend: CRUD screens for the 5 entities, import page, utilization bars
 - [ ] Tick Week 2 ✅ when: 500-row CSV imports and bad rows are reported clearly
 
