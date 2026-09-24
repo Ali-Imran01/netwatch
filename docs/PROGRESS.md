@@ -6,8 +6,8 @@ Legend: ✅ done · 🟡 in progress · ⬜ not started
 
 | Week | Milestone | Status | Done when |
 |---|---|---|---|
-| 1 | Foundation | 🟡 | Login works, CI green |
-| 2 | IPAM & inventory | ⬜ | Import 500-row CSV, bad rows reported clearly |
+| 1 | Foundation | ✅ | Login works, CI green |
+| 2 | IPAM & inventory | 🟡 | Import 500-row CSV, bad rows reported clearly |
 | 3 | Check engine | ⬜ | 50 monitors checked every 30s without backlog |
 | 4 | Status & dashboard | ⬜ | Killing a test host flips it to Down live |
 | 5 | Circuits & maintenance | ⬜ | SLA % excludes maintenance windows correctly |
@@ -25,7 +25,7 @@ Legend: ✅ done · 🟡 in progress · ⬜ not started
 - [x] WSL2 + Ubuntu + Docker Desktop working
 - [x] Docker Compose stack up: `laravel.test`, `mysql`, `redis`, `reverb`, `horizon`
 - [x] `migrate:fresh --seed` on MySQL; `artisan test` 6/6; curl csrf → login → user = 204/200/200
-- [ ] Browser check of login flow at http://localhost:5173 (not yet confirmed)
+- [x] Browser check of login flow at http://localhost:5173 (confirmed by user 2026-09-24)
 
 ### Notes
 
@@ -33,12 +33,22 @@ Legend: ✅ done · 🟡 in progress · ⬜ not started
 - Host port map avoids Laragon: app 8000, MySQL 33060, Redis 63790, Reverb 8080.
 - The container's own Vite port is remapped to 5180 (`VITE_PORT`) so the host-run frontend can use 5173, which CORS/Sanctum expect.
 
-## Next up
-
-Week 2 — IPAM & inventory: sites, VLANs, subnets, IPs, devices CRUD; utilization %; CSV import with row-level errors.
 
 ### Week 2 decisions (2026-09-24)
 
 - IPv4 only; IPv6 deferred.
 - CSV import is synchronous (no queue); good rows are imported and bad rows are reported with row number and reason.
 - Frontend: full CRUD screens for sites, VLANs, subnets, IPs and devices, plus the import page and utilization bars.
+
+## Week 2 — IPAM & inventory
+
+- [x] Migrations, models, factories: sites, vlans, subnets, ip_addresses, devices (all audited)
+- [x] Generic `InventoryController` + 5 thin controllers, `InventoryPolicy` (viewer read-only; admin/engineer write)
+- [x] Validation: VLAN id unique per site, CIDR normalisation + duplicate check, VLAN must belong to subnet's site, gateway inside subnet, IP inside subnet and not network/broadcast
+- [x] Subnet utilization % (non-free addresses / usable hosts; /31 and /32 handled)
+- [x] Delete of a referenced record returns 409
+- [x] Feature tests: 13 new, suite 19/19 green
+- [ ] CSV import with row-level validation errors (500-row test)
+- [ ] Demo seeder for inventory data
+- [ ] Frontend: CRUD screens for the 5 entities, import page, utilization bars
+- [ ] Tick Week 2 ✅ when: 500-row CSV imports and bad rows are reported clearly

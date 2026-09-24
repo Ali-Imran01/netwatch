@@ -2,6 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\Device;
+use App\Models\IpAddress;
+use App\Models\Site;
+use App\Models\Subnet;
+use App\Models\Vlan;
+use App\Policies\InventoryPolicy;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +26,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        foreach ([Site::class, Vlan::class, Subnet::class, IpAddress::class, Device::class] as $model) {
+            Gate::policy($model, InventoryPolicy::class);
+        }
     }
 }
