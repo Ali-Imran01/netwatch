@@ -70,3 +70,10 @@ Response: `{imported, failed, errors: [{row, errors: {column: [messages]}}]}`. M
 ## Next up
 
 Week 3 — Check engine: monitor CRUD; ping, TCP, HTTP, DNS probes; scheduler daemon; Horizon; results stored. Done when 50 monitors are checked every 30s without backlog.
+
+### Week 3 decisions (2026-09-24)
+
+- Ping shells out to the system `ping` (iputils-ping added to the app image).
+- Scheduler: Laravel scheduler + a due-monitor dispatcher that queues one Horizon job per monitor whose `next_check_at` has passed; sub-minute cadence via `everyThirtySeconds()`.
+- Store raw `check_results` now, with a prune command (14 days); rollups and charts are Week 4.
+- UI: monitor CRUD with last-check time, success/fail and latency, plus a "Run now" button. Live status board is Week 4.
