@@ -69,7 +69,7 @@ Only the identity cluster (`users`, `audit_logs`, plus a `role` column) is imple
 
 Authentication is Sanctum's SPA cookie-session flow: the frontend first requests `GET /sanctum/csrf-cookie`, then `POST /api/login` with credentials, then reads `GET /api/user`. Sessions are stateful for the SPA's origin only (`SANCTUM_STATEFUL_DOMAINS`). Authorization is role-based with three roles — `admin`, `engineer`, `viewer` — stored as a column on `users` and enforced per-resource via Laravel Policies (an `admin` bypass plus explicit per-role checks on the rest). Every create/update/delete on audited models is recorded to `audit_logs` with the acting user, action, model, and before/after state.
 
-## 8. Incident State Machine (reference only — not implemented this week)
+## 8. Incident State Machine (implemented in Week 6)
 
 Diagram: [`docs/incident-states.md`](docs/incident-states.md).
 
@@ -78,7 +78,7 @@ Detected → Acknowledged → Investigating → Escalated (to provider) → Moni
                   ↘────────────── Resolved (auto, if service recovers) ──────────↗
 ```
 
-Illegal transitions will be rejected in the service layer; every transition will write an `incident_events` row for MTTA/MTTR metrics. This is documented now for design continuity and implemented in Week 6.
+Illegal transitions are rejected in the service layer; every transition writes an `incident_events` row for MTTA/MTTR metrics. See [`docs/architecture.md`](docs/architecture.md) for how it fits with the check engine, alerts and maintenance windows.
 
 ## 9. Environments & Deployment
 

@@ -1,6 +1,11 @@
+import { isAxiosError } from 'axios'
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+
+// Public demo: the seeded account is read-only, so its credentials are shown on the sign-in page. Off unless the build sets VITE_DEMO_LOGIN=true.
+const showDemo = import.meta.env.VITE_DEMO_LOGIN === 'true'
+const demo = { email: 'demo@netwatch.example', password: 'read-only-demo' }
 
 export default function Login() {
   const { login } = useAuth()
@@ -17,8 +22,8 @@ export default function Login() {
     try {
       await login(email, password)
       navigate('/')
-    } catch {
-      setError('Invalid credentials.')
+    } catch (err) {
+      setError(isAxiosError(err) && err.response?.status === 429 ? 'Too many attempts. Wait a minute and try again.' : 'Invalid credentials.')
     } finally {
       setSubmitting(false)
     }
@@ -62,6 +67,23 @@ export default function Login() {
         >
           {submitting ? 'Signing in…' : 'Sign in'}
         </button>
+
+        {showDemo && (
+          <div className="rounded-md bg-sky-50 p-3 text-sm text-sky-900">
+            <p className="font-medium">Public demo (read-only)</p>
+            <p className="mt-1">Simulated carrier network; nothing here is real.</p>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail(demo.email)
+                setPassword(demo.password)
+              }}
+              className="mt-2 underline"
+            >
+              Fill in the demo account
+            </button>
+          </div>
+        )}
       </form>
     </div>
   )

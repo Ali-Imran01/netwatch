@@ -37,6 +37,13 @@ jobs:
           DB_DATABASE: ':memory:'
         run: ./vendor/bin/pest
 
+      # Level 6 with a baseline of typing findings that predate the check; new findings fail the build.
+      - name: Static analysis (Larastan)
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ':memory:'
+        run: ./vendor/bin/phpstan analyse --no-progress --memory-limit=1G
+
   frontend:
     runs-on: ubuntu-latest
     defaults:

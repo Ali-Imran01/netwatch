@@ -16,8 +16,8 @@ vi.mock('../api/inventory', async (importOriginal) => ({
     last_page: 1,
     total: 2,
     data: [
-      { id: 7, name: 'Core ping', type: 'ping', target: '192.0.2.10', port: null, enabled: true, last_success: false, last_latency_ms: null, last_checked_at: null, device: { name: 'rtr-kl-01' } },
-      { id: 8, name: 'Web', type: 'tcp', target: '192.0.2.20', port: 443, enabled: true, last_success: true, last_latency_ms: 12, last_checked_at: '2026-09-25T10:00:00Z', device: null },
+      { id: 7, name: 'Core ping', type: 'ping', target: '192.0.2.10', port: null, enabled: true, state: 'down', last_success: false, last_latency_ms: null, last_checked_at: null, device: { name: 'rtr-kl-01' } },
+      { id: 8, name: 'Web', type: 'tcp', target: '192.0.2.20', port: 443, enabled: true, state: 'up', last_success: true, last_latency_ms: 12, last_checked_at: '2026-09-25T10:00:00Z', device: null },
     ],
   }),
 }))

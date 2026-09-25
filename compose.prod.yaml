@@ -1,0 +1,93 @@
+# Production stack. See docs/DEPLOY.md.
+#   cp .env.production.example .env.production   (fill in the blanks)
+#   docker compose -f compose.prod.yaml --env-file .env.production up -d --build
+x-app: &app
+    build:
+        context: .
+        dockerfile: deploy/Dockerfile
+        args:
+            VITE_REVERB_APP_KEY: '${REVERB_APP_KEY}'
+            VITE_REVERB_HOST: '${SITE_DOMAIN}'
+            VITE_REVERB_PORT: '${PUBLIC_PORT:-443}'
+            VITE_REVERB_SCHEME: '${PUBLIC_SCHEME:-https}'
+            VITE_DEMO_LOGIN: '${DEMO_LOGIN:-}'
+    image: netwatch/app:latest
+    env_file: .env.production
+    restart: unless-stopped
+    depends_on:
+        mysql:
+            condition: service_healthy
+        redis:
+            condition: service_healthy
+    networks: [netwatch]
+
+services:
+    app:
+        <<: *app
+        ports:
+            - '${HTTP_PORT:-80}:80'
+            - '${HTTPS_PORT:-443}:443'
+            - '${HTTPS_PORT:-443}:443/udp'
+        environment:
+            SITE_ADDRESS: '${SITE_ADDRESS:-${SITE_DOMAIN}}'
+        volumes:
+            - caddy_data:/data
+            - caddy_config:/config
+            - storage:/app/storage
+
+    horizon:
+        <<: *app
+        command: php artisan horizon
+        volumes:
+            - storage:/app/storage
+
+    scheduler:
+        <<: *app
+        command: php artisan schedule:work
+        volumes:
+            - storage:/app/storage
+
+    reverb:
+        <<: *app
+        command: php artisan reverb:start --host=0.0.0.0 --port=8080
+        # No published port: only the app container's Caddy and PHP reach it.
+
+    mysql:
+        image: mysql:8.4
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_USER: '${DB_USERNAME}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ROOT_PASSWORD: '${DB_ROOT_PASSWORD}'
+        volumes:
+            - mysql_data:/var/lib/mysql
+        healthcheck:
+            test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-p${DB_ROOT_PASSWORD}']
+            interval: 5s
+            timeout: 5s
+            retries: 20
+        networks: [netwatch]
+
+    redis:
+        image: redis:7-alpine
+        restart: unless-stopped
+        command: redis-server --appendonly yes
+        volumes:
+            - redis_data:/data
+        healthcheck:
+            test: ['CMD', 'redis-cli', 'ping']
+            interval: 5s
+            timeout: 3s
+            retries: 20
+        networks: [netwatch]
+
+networks:
+    netwatch:
+
+volumes:
+    mysql_data:
+    redis_data:
+    caddy_data:
+    caddy_config:
+    storage:

@@ -9,4 +9,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('monitors:dispatch')->everyThirtySeconds()->withoutOverlapping();
+Schedule::command('checks:rollup')->everyFiveMinutes()->withoutOverlapping();
 Schedule::command('checks:prune')->dailyAt('03:00');

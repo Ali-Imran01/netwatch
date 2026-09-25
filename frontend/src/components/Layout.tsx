@@ -14,13 +14,18 @@ export default function Layout() {
         <p className="mb-6 text-lg font-semibold text-gray-900">NetWatch</p>
         <div className="space-y-1">
           <NavLink to="/" end className={linkClass}>
-            Dashboard
+            Status
           </NavLink>
-          {(['Inventory', 'Monitoring'] as const).map((group) => (
+          {(['Inventory', 'Carriers', 'Monitoring', 'Incidents'] as const).map((group) => (
             <div key={group}>
               <p className="px-3 pt-4 pb-1 text-xs font-medium uppercase text-gray-400">{group}</p>
+              {group === 'Incidents' && (
+                <NavLink to="/incidents" end className={linkClass}>
+                  Incidents
+                </NavLink>
+              )}
               {entities
-                .filter((e) => e.group === group)
+                .filter((e) => e.group === group && !(e.hideFromViewers && user?.role === 'viewer'))
                 .map((e) => (
                   <NavLink key={e.path} to={entityUrl(e)} className={linkClass}>
                     {e.title}

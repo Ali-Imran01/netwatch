@@ -10,6 +10,8 @@ use Throwable;
 
 class CheckRunner
 {
+    public function __construct(private StatusEvaluator $evaluator) {}
+
     /** Run one probe, store the raw result and refresh the monitor's latest-result columns. */
     public function run(Monitor $monitor): CheckResult
     {
@@ -30,12 +32,7 @@ class CheckRunner
             'detail' => $result->detail,
         ]);
 
-        // Query-builder update: latest-result bookkeeping is not an audited edit.
-        Monitor::whereKey($monitor->id)->update([
-            'last_checked_at' => $checkedAt,
-            'last_success' => $result->success,
-            'last_latency_ms' => $result->latencyMs,
-        ]);
+        $this->evaluator->apply($monitor, $stored);
 
         return $stored;
     }

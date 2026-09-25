@@ -7,6 +7,8 @@ use App\Enums\IpStatus;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['site_id', 'vlan_id', 'cidr', 'description', 'gateway'])]
 class Subnet extends Model
@@ -44,17 +46,20 @@ class Subnet extends Model
         return [$start, $start | (~$mask & 0xFFFFFFFF), $prefix];
     }
 
-    public function site()
+    /** @return BelongsTo<Site, $this> */
+    public function site(): BelongsTo
     {
         return $this->belongsTo(Site::class);
     }
 
-    public function vlan()
+    /** @return BelongsTo<Vlan, $this> */
+    public function vlan(): BelongsTo
     {
         return $this->belongsTo(Vlan::class);
     }
 
-    public function ipAddresses()
+    /** @return HasMany<IpAddress, $this> */
+    public function ipAddresses(): HasMany
     {
         return $this->hasMany(IpAddress::class);
     }

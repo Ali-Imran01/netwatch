@@ -13,6 +13,7 @@ class ProbeFactory
             MonitorType::Tcp => new TcpProbe,
             MonitorType::Http => new HttpProbe,
             MonitorType::Dns => new DnsProbe,
+            MonitorType::Simulator => new SimulatorProbe,
         };
     }
 }

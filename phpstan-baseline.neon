@@ -1,0 +1,769 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Cannot access property \$value on string\.$#'
+			identifier: property.nonObject
+			count: 2
+			path: app/Alerts/AlertMessage.php
+
+		-
+			message: '#^Cannot call method utc\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Alerts/AlertMessage.php
+
+		-
+			message: '#^Cannot access property \$timestamp on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Console/Commands/RollUpChecks.php
+
+		-
+			message: '#^Cannot access property \$value on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Events/MonitorChecked.php
+
+		-
+			message: '#^Cannot call method toIso8601String\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Events/MonitorChecked.php
+
+		-
+			message: '#^Method App\\Events\\MonitorChecked\:\:broadcastWith\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Events/MonitorChecked.php
+
+		-
+			message: '#^Called ''Model\:\:make\(\)'' which performs unnecessary work, use ''new Model\(\)''\.$#'
+			identifier: larastan.noModelMake
+			count: 1
+			path: app/Http/Controllers/Api/AlertChannelController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\AlertChannelController\:\:rules\(\) has parameter \$input with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/AlertChannelController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\AuthController\:\:login\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Api/AuthController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\AuthController\:\:logout\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Api/AuthController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\AuthController\:\:user\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Api/AuthController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/CircuitController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\CircuitController\:\:filters\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/CircuitController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\CircuitController\:\:present\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/CircuitController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\CircuitController\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Http/Controllers/Api/CircuitController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\CircuitController\:\:rules\(\) has parameter \$input with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/CircuitController.php
+
+		-
+			message: '#^Parameter \#1 \$circuit of method App\\Services\\SlaCalculator\:\:forCircuit\(\) expects App\\Models\\Circuit, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Http/Controllers/Api/CircuitController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\DeviceController\:\:csvColumns\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/DeviceController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\DeviceController\:\:filters\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/DeviceController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\DeviceController\:\:fromCsv\(\) has parameter \$row with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/DeviceController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\DeviceController\:\:fromCsv\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/DeviceController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\DeviceController\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Http/Controllers/Api/DeviceController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\DeviceController\:\:rules\(\) has parameter \$input with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/DeviceController.php
+
+		-
+			message: '#^Cannot access property \$value on string\.$#'
+			identifier: property.nonObject
+			count: 4
+			path: app/Http/Controllers/Api/IncidentController.php
+
+		-
+			message: '#^Cannot call method allowedNext\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/IncidentController.php
+
+		-
+			message: '#^Cannot call method isOpen\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/IncidentController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\IncidentController\:\:mean\(\) has parameter \$incidents with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Http/Controllers/Api/IncidentController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\IncidentController\:\:present\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/IncidentController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\IncidentController\:\:rfo\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/Http/Controllers/Api/IncidentController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\IncidentEvent\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Http/Controllers/Api/IncidentController.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\IncidentEvent\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Http/Controllers/Api/IncidentController.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between string and App\\Enums\\IncidentState\:\:Closed will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Http/Controllers/Api/IncidentController.php
+
+		-
+			message: '#^Dead catch \- Illuminate\\Database\\QueryException is never thrown in the try block\.$#'
+			identifier: catch.neverThrown
+			count: 1
+			path: app/Http/Controllers/Api/InventoryController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\InventoryController\:\:attributes\(\) has parameter \$validated with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/InventoryController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\InventoryController\:\:attributes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/InventoryController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\InventoryController\:\:csvColumns\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/InventoryController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\InventoryController\:\:filters\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/InventoryController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\InventoryController\:\:fromCsv\(\) has parameter \$row with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/InventoryController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\InventoryController\:\:fromCsv\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/InventoryController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\InventoryController\:\:present\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/InventoryController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\InventoryController\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Http/Controllers/Api/InventoryController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\InventoryController\:\:ref\(\) has parameter \$where with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/InventoryController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\InventoryController\:\:rules\(\) has parameter \$input with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/InventoryController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\IpAddressController\:\:csvColumns\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/IpAddressController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\IpAddressController\:\:filters\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/IpAddressController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\IpAddressController\:\:fromCsv\(\) has parameter \$row with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/IpAddressController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\IpAddressController\:\:fromCsv\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/IpAddressController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\IpAddressController\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Http/Controllers/Api/IpAddressController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\IpAddressController\:\:rules\(\) has parameter \$input with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/IpAddressController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$ends_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/MaintenanceWindowController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$starts_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/MaintenanceWindowController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\MaintenanceWindowController\:\:filters\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/MaintenanceWindowController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\MaintenanceWindowController\:\:present\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/MaintenanceWindowController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\MaintenanceWindowController\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Http/Controllers/Api/MaintenanceWindowController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\MaintenanceWindowController\:\:rules\(\) has parameter \$input with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/MaintenanceWindowController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$monitorable\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/MonitorController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$monitorable_id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Http/Controllers/Api/MonitorController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$monitorable_type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/MonitorController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$state\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/MonitorController.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Controllers/Api/MonitorController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:inMaintenance\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/MonitorController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:results\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/MonitorController.php
+
+		-
+			message: '#^Cannot call method toIso8601String\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/MonitorController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\MonitorController\:\:attributes\(\) has parameter \$validated with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/MonitorController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\MonitorController\:\:attributes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/MonitorController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\MonitorController\:\:filters\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/MonitorController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\MonitorController\:\:present\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/MonitorController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\MonitorController\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Http/Controllers/Api/MonitorController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\MonitorController\:\:rules\(\) has parameter \$input with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/MonitorController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\CheckRollup\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Http/Controllers/Api/MonitorController.php
+
+		-
+			message: '#^Parameter \#1 \$monitor of method App\\Services\\CheckRunner\:\:run\(\) expects App\\Models\\Monitor, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/Api/MonitorController.php
+
+		-
+			message: '#^Property App\\Http\\Controllers\\Api\\MonitorController\:\:\$activeWindows with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Http/Controllers/Api/MonitorController.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\CheckRollup\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
+			path: app/Http/Controllers/Api/MonitorController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\ProviderController\:\:rules\(\) has parameter \$input with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/ProviderController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\SiteController\:\:rules\(\) has parameter \$input with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/SiteController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:usableHosts\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/SubnetController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:utilization\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/Api/SubnetController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\SubnetController\:\:csvColumns\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/SubnetController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\SubnetController\:\:filters\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/SubnetController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\SubnetController\:\:fromCsv\(\) has parameter \$row with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/SubnetController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\SubnetController\:\:fromCsv\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/SubnetController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\SubnetController\:\:present\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/SubnetController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\SubnetController\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Http/Controllers/Api/SubnetController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\SubnetController\:\:rules\(\) has parameter \$input with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/SubnetController.php
+
+		-
+			message: '#^Cannot access property \$value on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Http/Controllers/Api/TelegramWebhookController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\TelegramWebhookController\:\:handle\(\) has parameter \$callback with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/TelegramWebhookController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\VlanController\:\:csvColumns\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/VlanController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\VlanController\:\:filters\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/VlanController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\VlanController\:\:fromCsv\(\) has parameter \$row with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/VlanController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\VlanController\:\:fromCsv\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/VlanController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\VlanController\:\:query\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Http/Controllers/Api/VlanController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\VlanController\:\:rules\(\) has parameter \$input with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/VlanController.php
+
+		-
+			message: '#^Class App\\Models\\AlertChannel uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/AlertChannel.php
+
+		-
+			message: '#^Class App\\Models\\Circuit uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Circuit.php
+
+		-
+			message: '#^Class App\\Models\\Device uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Device.php
+
+		-
+			message: '#^Cannot call method diffInSeconds\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Models/Incident.php
+
+		-
+			message: '#^Class App\\Models\\Incident uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Incident.php
+
+		-
+			message: '#^Class App\\Models\\IpAddress uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/IpAddress.php
+
+		-
+			message: '#^Class App\\Models\\MaintenanceWindow uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/MaintenanceWindow.php
+
+		-
+			message: '#^Method App\\Models\\MaintenanceWindow\:\:scopeActive\(\) has parameter \$query with generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/MaintenanceWindow.php
+
+		-
+			message: '#^Method App\\Models\\MaintenanceWindow\:\:scopeActive\(\) return type with generic class Illuminate\\Database\\Eloquent\\Builder does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/MaintenanceWindow.php
+
+		-
+			message: '#^Class App\\Models\\Monitor uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Monitor.php
+
+		-
+			message: '#^Method App\\Models\\Monitor\:\:inMaintenance\(\) has parameter \$activeWindows with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Monitor.php
+
+		-
+			message: '#^Class App\\Models\\Provider uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Provider.php
+
+		-
+			message: '#^Class App\\Models\\Site uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Site.php
+
+		-
+			message: '#^Class App\\Models\\Subnet uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Subnet.php
+
+		-
+			message: '#^Class App\\Models\\Vlan uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/Vlan.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between string and App\\Enums\\UserRole\:\:Viewer will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: app/Policies/AlertChannelPolicy.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between string and App\\Enums\\UserRole\:\:Admin will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Policies/AlertChannelPolicy.php
+
+		-
+			message: '#^Call to function in_array\(\) with arguments string, array\{App\\Enums\\UserRole\:\:Admin, App\\Enums\\UserRole\:\:Engineer\} and true will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 1
+			path: app/Policies/InventoryPolicy.php
+
+		-
+			message: '#^Call to function in_array\(\) with arguments string, array\{App\\Enums\\UserRole\:\:Engineer, App\\Enums\\UserRole\:\:Viewer\} and true will always evaluate to false\.$#'
+			identifier: function.impossibleType
+			count: 2
+			path: app/Policies/UserPolicy.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between string and App\\Enums\\UserRole\:\:Viewer will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: app/Policies/UserPolicy.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between string and App\\Enums\\UserRole\:\:Admin will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Policies/UserPolicy.php
+
+		-
+			message: '#^Parameter \#1 \$type of static method App\\Probes\\ProbeFactory\:\:for\(\) expects App\\Enums\\MonitorType, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Services/CheckRunner.php
+
+		-
+			message: '#^Called ''Model\:\:make\(\)'' which performs unnecessary work, use ''new Model\(\)''\.$#'
+			identifier: larastan.noModelMake
+			count: 1
+			path: app/Services/IncidentService.php
+
+		-
+			message: '#^Cannot access property \$value on string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Services/IncidentService.php
+
+		-
+			message: '#^Cannot call method autoResolves\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Services/IncidentService.php
+
+		-
+			message: '#^Cannot call method canMoveTo\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Services/IncidentService.php
+
+		-
+			message: '#^Property App\\Models\\Incident\:\:\$state \(string\) does not accept App\\Enums\\IncidentState\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Services/IncidentService.php
+
+		-
+			message: '#^Result of && is always false\.$#'
+			identifier: booleanAnd.alwaysFalse
+			count: 1
+			path: app/Services/IncidentService.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between string and App\\Enums\\MonitorState\:\:Down will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Services/IncidentService.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between string and App\\Enums\\MonitorState\:\:Up will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Services/IncidentService.php
+
+		-
+			message: '#^Cannot call method copy\(\) on string\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Services/SlaCalculator.php
+
+		-
+			message: '#^Method App\\Services\\SlaCalculator\:\:forCircuit\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Services/SlaCalculator.php
+
+		-
+			message: '#^Result of && is always false\.$#'
+			identifier: booleanAnd.alwaysFalse
+			count: 4
+			path: app/Services/StatusEvaluator.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between string and App\\Enums\\MonitorState\:\:Down will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Services/StatusEvaluator.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between string and App\\Enums\\MonitorState\:\:Unknown will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 2
+			path: app/Services/StatusEvaluator.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between string and App\\Enums\\MonitorState\:\:Up will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Services/StatusEvaluator.php

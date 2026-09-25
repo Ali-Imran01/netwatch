@@ -8,4 +8,5 @@ enum MonitorType: string
     case Tcp = 'tcp';
     case Http = 'http';
     case Dns = 'dns';
+    case Simulator = 'simulator';
 }

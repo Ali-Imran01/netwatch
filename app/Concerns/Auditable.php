@@ -17,6 +17,10 @@ trait Auditable
         static::deleted(fn (Model $model) => static::recordAudit('deleted', $model, $model->getOriginal(), null));
     }
 
+    /**
+     * @param  array<string, mixed>|null  $before
+     * @param  array<string, mixed>|null  $after
+     */
     protected static function recordAudit(string $action, Model $model, ?array $before, ?array $after): void
     {
         AuditLog::create([

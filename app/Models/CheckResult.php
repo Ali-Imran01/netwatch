@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable(['monitor_id', 'checked_at', 'success', 'latency_ms', 'detail'])]
 class CheckResult extends Model
@@ -15,7 +16,8 @@ class CheckResult extends Model
         return ['checked_at' => 'datetime', 'success' => 'boolean'];
     }
 
-    public function monitor()
+    /** @return BelongsTo<Monitor, $this> */
+    public function monitor(): BelongsTo
     {
         return $this->belongsTo(Monitor::class);
     }

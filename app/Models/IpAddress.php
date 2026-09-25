@@ -7,6 +7,7 @@ use App\Enums\IpStatus;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable(['subnet_id', 'address', 'status', 'device_id', 'dns_name'])]
 class IpAddress extends Model
@@ -23,12 +24,14 @@ class IpAddress extends Model
         return ['status' => IpStatus::class];
     }
 
-    public function subnet()
+    /** @return BelongsTo<Subnet, $this> */
+    public function subnet(): BelongsTo
     {
         return $this->belongsTo(Subnet::class);
     }
 
-    public function device()
+    /** @return BelongsTo<Device, $this> */
+    public function device(): BelongsTo
     {
         return $this->belongsTo(Device::class);
     }

@@ -82,7 +82,8 @@ return [
                     'scheme' => env('REVERB_SCHEME', 'https'),
                     'useTLS' => env('REVERB_SCHEME', 'https') === 'https',
                 ],
-                'allowed_origins' => ['*'],
+                // Production sets REVERB_ALLOWED_ORIGINS to the site's own domain so other sites cannot open sockets.
+                'allowed_origins' => explode(',', env('REVERB_ALLOWED_ORIGINS', '*')),
                 'ping_interval' => env('REVERB_APP_PING_INTERVAL', 60),
                 'activity_timeout' => env('REVERB_APP_ACTIVITY_TIMEOUT', 30),
                 'max_connections' => env('REVERB_APP_MAX_CONNECTIONS'),

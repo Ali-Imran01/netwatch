@@ -5,7 +5,10 @@ import { useAuth } from '../context/AuthContext'
 import { entities, entityUrl } from '../inventory/entities'
 import Dashboard from '../pages/Dashboard'
 import EntityPage from '../pages/EntityPage'
+import IncidentDetail from '../pages/IncidentDetail'
+import Incidents from '../pages/Incidents'
 import Login from '../pages/Login'
+import MonitorDetail from '../pages/MonitorDetail'
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth()
@@ -29,6 +32,9 @@ export default function AppRouter() {
           }
         >
           <Route path="/" element={<Dashboard />} />
+          <Route path="/monitoring/monitors/:id" element={<MonitorDetail />} />
+          <Route path="/incidents" element={<Incidents />} />
+          <Route path="/incidents/:id" element={<IncidentDetail />} />
           {entities.map((e) => (
             // key forces a fresh page (page number, open dialogs) when switching entity.
             <Route key={e.path} path={entityUrl(e)} element={<EntityPage key={e.path} entity={e} />} />

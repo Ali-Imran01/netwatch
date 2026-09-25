@@ -1,0 +1,38 @@
+{
+	frankenphp
+	order php_server before file_server
+	# Public sites get real certificates automatically. For a local smoke test set SITE_ADDRESS=:80.
+}
+
+{$SITE_ADDRESS:localhost} {
+	encode zstd gzip
+
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		-Server
+	}
+
+	# Live updates: the browser's WebSocket goes to Reverb. Reverb's own HTTP API (/apps/*) is never exposed;
+	# the app reaches it over the private network.
+	@ws path /app/*
+	handle @ws {
+		reverse_proxy reverb:8080
+	}
+
+	# The API. Horizon (/horizon) is deliberately not routed here.
+	@api path /api/* /sanctum/* /up
+	handle @api {
+		root * /app/public
+		php_server
+	}
+
+	# Everything else is the single-page app; unknown paths fall back to index.html for client-side routing.
+	handle {
+		root * /srv/spa
+		try_files {path} /index.html
+		file_server
+	}
+}

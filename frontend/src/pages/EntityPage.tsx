@@ -14,11 +14,20 @@ import {
 import { useAuth } from '../context/AuthContext'
 import type { Entity, RowAction } from '../inventory/entities'
 
+/** ISO string from the API → value for a datetime-local input, in the user's local time. */
+const toLocalInput = (iso: unknown) => {
+  if (!iso) return ''
+  const d = new Date(String(iso))
+  return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16)
+}
+
 const inputClass = 'mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm'
 
 function RowForm({ entity, row, onDone, onCancel }: { entity: Entity; row: Row | null; onDone: () => void; onCancel: () => void }) {
   const [values, setValues] = useState<Record<string, unknown>>(() =>
-    Object.fromEntries(entity.fields.map((f) => [f.key, row?.[f.key] ?? f.default ?? (f.type === 'checkbox' ? false : '')])),
+    Object.fromEntries(
+      entity.fields.map((f) => [f.key, f.type === 'datetime' ? toLocalInput(row?.[f.key]) : (row?.[f.key] ?? f.default ?? (f.type === 'checkbox' ? false : ''))]),
+    ),
   )
   const [choices, setChoices] = useState<Record<string, Row[]>>({})
   const [error, setError] = useState<{ message: string; fields: FieldErrors } | null>(null)
@@ -35,7 +44,8 @@ function RowForm({ entity, row, onDone, onCancel }: { entity: Entity; row: Row |
     setSaving(true)
     setError(null)
     // Empty inputs are sent as null so optional fields can be cleared.
-    const payload = Object.fromEntries(Object.entries(values).map(([k, v]) => [k, v === '' ? null : v]))
+    const isDate = (k: string) => entity.fields.find((f) => f.key === k)?.type === 'datetime'
+    const payload = Object.fromEntries(Object.entries(values).map(([k, v]) => [k, v === '' ? null : isDate(k) ? new Date(String(v)).toISOString() : v]))
     try {
       await saveRow(entity.path, payload, row?.id)
       onDone()
@@ -81,7 +91,7 @@ function RowForm({ entity, row, onDone, onCancel }: { entity: Entity; row: Row |
             ) : (
               <input
                 className={inputClass}
-                type={f.type === 'number' ? 'number' : 'text'}
+                type={f.type === 'number' ? 'number' : f.type === 'datetime' ? 'datetime-local' : 'text'}
                 step={f.type === 'number' ? 'any' : undefined}
                 value={String(values[f.key] ?? '')}
                 onChange={(e) => setValues({ ...values, [f.key]: e.target.value })}
@@ -174,6 +184,7 @@ export default function EntityPage({ entity }: { entity: Entity }) {
   const [pageNo, setPageNo] = useState(1)
   const [page, setPage] = useState<Page | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
   const [editing, setEditing] = useState<Row | 'new' | null>(null)
   const [showImport, setShowImport] = useState(false)
 
@@ -189,8 +200,11 @@ export default function EntityPage({ entity }: { entity: Entity }) {
   useEffect(load, [load])
 
   async function act(action: RowAction, row: Row) {
+    setNotice(null)
+    setError(null)
     try {
-      await action.run(row)
+      const message = await action.run(row)
+      if (typeof message === 'string') setNotice(message)
       load()
     } catch (err) {
       setError(apiError(err).message)
@@ -227,6 +241,7 @@ export default function EntityPage({ entity }: { entity: Entity }) {
 
       {showImport && canWrite && entity.csvHeader && <ImportPanel entity={entity} onImported={load} />}
       {error && <p className="mb-4 rounded bg-red-50 p-3 text-sm text-red-700">{error}</p>}
+      {notice && <p className="mb-4 rounded bg-emerald-50 p-3 text-sm text-emerald-700">{notice}</p>}
 
       <div className="overflow-x-auto rounded border border-gray-200 bg-white">
         <table className="w-full text-left text-sm">
