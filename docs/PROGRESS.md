@@ -8,7 +8,7 @@ Legend: ✅ done · 🟡 in progress · ⬜ not started
 |---|---|---|---|
 | 1 | Foundation | ✅ | Login works, CI green |
 | 2 | IPAM & inventory | ✅ | Import 500-row CSV, bad rows reported clearly |
-| 3 | Check engine | ⬜ | 50 monitors checked every 30s without backlog |
+| 3 | Check engine | ✅ | 50 monitors checked every 30s without backlog |
 | 4 | Status & dashboard | ⬜ | Killing a test host flips it to Down live |
 | 5 | Circuits & maintenance | ⬜ | SLA % excludes maintenance windows correctly |
 | 6 | Incidents & alerts | ⬜ | Outage → Telegram alert → ack from phone → RFO PDF |
@@ -69,7 +69,7 @@ Response: `{imported, failed, errors: [{row, errors: {column: [messages]}}]}`. M
 
 ## Next up
 
-Week 3 — Check engine: monitor CRUD; ping, TCP, HTTP, DNS probes; scheduler daemon; Horizon; results stored. Done when 50 monitors are checked every 30s without backlog.
+Week 4 — Status & dashboard: flap-protected evaluator, live status board (Reverb), latency charts, rollup job.
 
 ### Week 3 decisions (2026-09-24)
 
@@ -77,3 +77,24 @@ Week 3 — Check engine: monitor CRUD; ping, TCP, HTTP, DNS probes; scheduler da
 - Scheduler: Laravel scheduler + a due-monitor dispatcher that queues one Horizon job per monitor whose `next_check_at` has passed; sub-minute cadence via `everyThirtySeconds()`.
 - Store raw `check_results` now, with a prune command (14 days); rollups and charts are Week 4.
 - UI: monitor CRUD with last-check time, success/fail and latency, plus a "Run now" button. Live status board is Week 4.
+
+## Week 3 — Check engine
+
+- [x] `monitors` + `check_results` tables; `Monitor` (audited, polymorphic `monitorable`, devices only until Week 5) and `CheckResult`
+- [x] Probes behind one `Probe` interface: ping (system `ping`, argv only), TCP, HTTP (2xx/3xx = up, redirects not followed), DNS (A/AAAA)
+- [x] `CheckRunner` stores the raw result and refreshes `last_*` columns on the monitor; a probe exception becomes a failed result
+- [x] Scheduler: `schedule:work` (new `scheduler` compose service) runs `monitors:dispatch` every 30s; it claims due monitors with a compare-and-set on `next_check_at` and queues one `RunCheck` job each on the `checks` queue
+- [x] Horizon: `checks` queue served first, 10 workers locally
+- [x] `checks:prune` (14 days, daily 03:00)
+- [x] API: `/api/monitors` CRUD (same policy as inventory), `POST /api/monitors/{id}/run` for "Run now"; targets validated as host/IP (or http(s) URL) so nothing option-like reaches `ping`
+- [x] Frontend: Monitoring → Monitors page with Up/Down, latency, last-checked time, Run now; enabled checkbox
+- [x] Sail runtime published to `docker/8.5` so the image includes `iputils-ping`
+- [x] Tests: 44/44 Pest (probes, validation, dispatcher cadence, 50-monitor tick, prune), 4/4 Vitest
+- [x] Done when: `db:seed --class=MonitorSeeder` (50 monitors, 30s) on the Sail stack → 400 checks in 4.5 min, gaps 26–35s (avg 30s), queue depth 0, 0 failed jobs
+
+### Notes
+
+- Dispatch times use one tick timestamp per run. Claiming each monitor at its own `now()` pushed later monitors past the next tick's 3s grace window and doubled their gap to ~60s.
+- The demo seeder targets hosts inside the stack (`redis`, `mysql`, `reverb`, `laravel.test`). HTTP goes to Reverb because `laravel.test` is a single-threaded dev server and timed out under 8 concurrent probes.
+- DNS timeouts are not enforced (PHP has no per-query timeout). `retries`/`thresholds` are left to the Week 4 evaluator.
+- Scheduling `monitors:dispatch` as an in-process `Schedule::call` hung the scheduler; the plain `Schedule::command` is used.

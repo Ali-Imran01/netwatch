@@ -1,12 +1,15 @@
 import type { ReactNode } from 'react'
 import type { Row } from '../api/inventory'
+import { runMonitor } from '../api/inventory'
 import UtilizationBar from '../components/UtilizationBar'
 
 export interface Field {
   key: string
   label: string
-  type: 'text' | 'number' | 'select' | 'ref'
+  type: 'text' | 'number' | 'select' | 'ref' | 'checkbox'
   required?: boolean
+  /** Initial value on a new record. */
+  default?: unknown
   options?: string[]
   /** For `ref` fields: the entity to pick from and how to label each choice. */
   ref?: { path: string; label: (row: Row) => string }
@@ -17,15 +20,26 @@ export interface Column {
   render: (row: Row) => ReactNode
 }
 
+export interface RowAction {
+  label: string
+  run: (row: Row) => Promise<unknown>
+}
+
 export interface Entity {
   path: string
   title: string
   singular: string
+  /** Sidebar section; also the first URL segment. */
+  group: 'Inventory' | 'Monitoring'
   fields: Field[]
   columns: Column[]
-  /** CSV header line shown on the import panel. */
-  csvHeader: string
+  /** CSV header line shown on the import panel; omit for entities without CSV import. */
+  csvHeader?: string
+  /** Extra per-row buttons (shown to users who can write). */
+  actions?: RowAction[]
 }
+
+export const entityUrl = (e: Entity) => `/${e.group.toLowerCase()}/${e.path}`
 
 const site: Field = { key: 'site_id', label: 'Site', type: 'ref', required: true, ref: { path: 'sites', label: (r) => `${r.code} — ${r.name}` } }
 
@@ -35,6 +49,7 @@ export const entities: Entity[] = [
     path: 'sites',
     title: 'Sites',
     singular: 'site',
+    group: 'Inventory',
     csvHeader: 'name,code,city,country,lat,lng',
     fields: [
       { key: 'name', label: 'Name', type: 'text', required: true },
@@ -55,6 +70,7 @@ export const entities: Entity[] = [
     path: 'vlans',
     title: 'VLANs',
     singular: 'VLAN',
+    group: 'Inventory',
     csvHeader: 'site_code,vid,name',
     fields: [site, { key: 'vid', label: 'VLAN ID (1–4094)', type: 'number', required: true }, { key: 'name', label: 'Name', type: 'text', required: true }],
     columns: [
@@ -67,6 +83,7 @@ export const entities: Entity[] = [
     path: 'subnets',
     title: 'Subnets',
     singular: 'subnet',
+    group: 'Inventory',
     csvHeader: 'site_code,vlan_vid,cidr,description,gateway',
     fields: [
       site,
@@ -88,6 +105,7 @@ export const entities: Entity[] = [
     path: 'ip-addresses',
     title: 'IP addresses',
     singular: 'IP address',
+    group: 'Inventory',
     csvHeader: 'site_code,subnet_cidr,address,status,device_name,dns_name',
     fields: [
       { key: 'subnet_id', label: 'Subnet', type: 'ref', required: true, ref: { path: 'subnets', label: (r) => `${r.site?.code} · ${r.cidr}` } },
@@ -108,6 +126,7 @@ export const entities: Entity[] = [
     path: 'devices',
     title: 'Devices',
     singular: 'device',
+    group: 'Inventory',
     csvHeader: 'site_code,name,type,vendor,model,serial,mgmt_ip',
     fields: [
       site,
@@ -126,5 +145,39 @@ export const entities: Entity[] = [
       { header: 'Model', render: (r) => r.model },
       { header: 'Mgmt IP', render: (r) => r.mgmt_ip?.address },
     ],
+  },
+  {
+    path: 'monitors',
+    title: 'Monitors',
+    singular: 'monitor',
+    group: 'Monitoring',
+    fields: [
+      { key: 'name', label: 'Name', type: 'text', required: true },
+      { key: 'type', label: 'Type', type: 'select', required: true, options: ['ping', 'tcp', 'http', 'dns'] },
+      { key: 'target', label: 'Target (host/IP, or URL for http)', type: 'text', required: true },
+      { key: 'port', label: 'Port (tcp only)', type: 'number' },
+      { key: 'interval_s', label: 'Interval (seconds, min 30)', type: 'number', required: true, default: 60 },
+      { key: 'timeout_ms', label: 'Timeout (ms, shorter than interval)', type: 'number', required: true, default: 3000 },
+      { key: 'device_id', label: 'Device', type: 'ref', ref: { path: 'devices', label: (r) => r.name } },
+      { key: 'enabled', label: 'Enabled', type: 'checkbox', default: true },
+    ],
+    columns: [
+      { header: 'Name', render: (r) => r.name },
+      { header: 'Type', render: (r) => r.type },
+      { header: 'Target', render: (r) => (r.port ? `${r.target}:${r.port}` : r.target) },
+      { header: 'Device', render: (r) => r.device?.name },
+      {
+        header: 'Last check',
+        render: (r) =>
+          !r.enabled ? (
+            <span className="text-gray-400">Disabled</span>
+          ) : r.last_success === null ? null : (
+            <span className={r.last_success ? 'font-medium text-emerald-700' : 'font-medium text-red-600'}>{r.last_success ? 'Up' : 'Down'}</span>
+          ),
+      },
+      { header: 'Latency', render: (r) => (r.last_latency_ms === null ? null : `${r.last_latency_ms} ms`) },
+      { header: 'Checked at', render: (r) => (r.last_checked_at ? new Date(r.last_checked_at).toLocaleTimeString() : null) },
+    ],
+    actions: [{ label: 'Run now', run: (r) => runMonitor(r.id) }],
   },
 ]

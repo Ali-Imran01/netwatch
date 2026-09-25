@@ -12,13 +12,13 @@ import {
   type Row,
 } from '../api/inventory'
 import { useAuth } from '../context/AuthContext'
-import type { Entity } from '../inventory/entities'
+import type { Entity, RowAction } from '../inventory/entities'
 
 const inputClass = 'mt-1 w-full rounded border border-gray-300 px-3 py-2 text-sm'
 
 function RowForm({ entity, row, onDone, onCancel }: { entity: Entity; row: Row | null; onDone: () => void; onCancel: () => void }) {
   const [values, setValues] = useState<Record<string, unknown>>(() =>
-    Object.fromEntries(entity.fields.map((f) => [f.key, row?.[f.key] ?? ''])),
+    Object.fromEntries(entity.fields.map((f) => [f.key, row?.[f.key] ?? f.default ?? (f.type === 'checkbox' ? false : '')])),
   )
   const [choices, setChoices] = useState<Record<string, Row[]>>({})
   const [error, setError] = useState<{ message: string; fields: FieldErrors } | null>(null)
@@ -56,7 +56,14 @@ function RowForm({ entity, row, onDone, onCancel }: { entity: Entity; row: Row |
           <label key={f.key} className="mt-4 block text-sm font-medium text-gray-700">
             {f.label}
             {f.required && ' *'}
-            {f.type === 'select' || f.type === 'ref' ? (
+            {f.type === 'checkbox' ? (
+              <input
+                type="checkbox"
+                className="ml-3 align-middle"
+                checked={Boolean(values[f.key])}
+                onChange={(e) => setValues({ ...values, [f.key]: e.target.checked })}
+              />
+            ) : f.type === 'select' || f.type === 'ref' ? (
               <select
                 className={inputClass}
                 value={String(values[f.key] ?? '')}
@@ -181,6 +188,15 @@ export default function EntityPage({ entity }: { entity: Entity }) {
 
   useEffect(load, [load])
 
+  async function act(action: RowAction, row: Row) {
+    try {
+      await action.run(row)
+      load()
+    } catch (err) {
+      setError(apiError(err).message)
+    }
+  }
+
   async function remove(row: Row) {
     if (!window.confirm(`Delete this ${entity.singular}?`)) return
     try {
@@ -197,9 +213,11 @@ export default function EntityPage({ entity }: { entity: Entity }) {
         <h1 className="text-2xl font-semibold text-gray-900">{entity.title}</h1>
         {canWrite && (
           <div className="flex gap-2">
-            <button onClick={() => setShowImport(!showImport)} className="rounded border border-gray-300 px-3 py-2 text-sm hover:bg-gray-100">
-              Import CSV
-            </button>
+            {entity.csvHeader && (
+              <button onClick={() => setShowImport(!showImport)} className="rounded border border-gray-300 px-3 py-2 text-sm hover:bg-gray-100">
+                Import CSV
+              </button>
+            )}
             <button onClick={() => setEditing('new')} className="rounded bg-gray-900 px-3 py-2 text-sm text-white hover:bg-gray-700">
               New {entity.singular}
             </button>
@@ -207,7 +225,7 @@ export default function EntityPage({ entity }: { entity: Entity }) {
         )}
       </div>
 
-      {showImport && canWrite && <ImportPanel entity={entity} onImported={load} />}
+      {showImport && canWrite && entity.csvHeader && <ImportPanel entity={entity} onImported={load} />}
       {error && <p className="mb-4 rounded bg-red-50 p-3 text-sm text-red-700">{error}</p>}
 
       <div className="overflow-x-auto rounded border border-gray-200 bg-white">
@@ -232,6 +250,11 @@ export default function EntityPage({ entity }: { entity: Entity }) {
                 ))}
                 {canWrite && (
                   <td className="whitespace-nowrap px-4 py-2 text-right">
+                    {entity.actions?.map((a) => (
+                      <button key={a.label} onClick={() => act(a, row)} className="mr-3 text-emerald-700 hover:text-emerald-900">
+                        {a.label}
+                      </button>
+                    ))}
                     <button onClick={() => setEditing(row)} className="mr-3 text-gray-600 hover:text-gray-900">
                       Edit
                     </button>

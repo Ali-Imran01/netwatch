@@ -199,7 +199,8 @@ return [
     'defaults' => [
         'supervisor-1' => [
             'connection' => 'redis',
-            'queue' => ['default'],
+            // Checks first so a backlog of other jobs never delays probes.
+            'queue' => ['checks', 'default'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 1,
@@ -223,7 +224,8 @@ return [
 
         'local' => [
             'supervisor-1' => [
-                'maxProcesses' => 3,
+                // Probes mostly wait on the network; 50 monitors every 30s needs headroom for slow targets.
+                'maxProcesses' => 10,
             ],
         ],
     ],

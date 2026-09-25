@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DeviceController;
 use App\Http\Controllers\Api\IpAddressController;
+use App\Http\Controllers\Api\MonitorController;
 use App\Http\Controllers\Api\SiteController;
 use App\Http\Controllers\Api\SubnetController;
 use App\Http\Controllers\Api\VlanController;
@@ -20,7 +21,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post("$path/import", [$controller, 'import']);
     }
 
+    Route::post('monitors/{id}/run', [MonitorController::class, 'run'])->whereNumber('id');
+
     Route::apiResources([
+        'monitors' => MonitorController::class,
         'sites' => SiteController::class,
         'vlans' => VlanController::class,
         'subnets' => SubnetController::class,

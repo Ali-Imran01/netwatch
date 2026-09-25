@@ -34,6 +34,12 @@ abstract class InventoryController extends Controller
         return $this->model()::query();
     }
 
+    /** Map validated input to model attributes on create/update. Override when the API shape differs from the columns. */
+    protected function attributes(array $validated): array
+    {
+        return $validated;
+    }
+
     /** Shape a record for the API. */
     protected function present(Model $record): array
     {
@@ -60,7 +66,7 @@ abstract class InventoryController extends Controller
     {
         Gate::authorize('create', $this->model());
 
-        $record = $this->model()::create($request->validate($this->rules(null, $request->all())));
+        $record = $this->model()::create($this->attributes($request->validate($this->rules(null, $request->all()))));
 
         return response()->json($this->present($this->query()->findOrFail($record->getKey())), 201);
     }
@@ -78,7 +84,7 @@ abstract class InventoryController extends Controller
         $record = $this->query()->findOrFail($id);
         Gate::authorize('update', $record);
 
-        $record->update($request->validate($this->rules($record, $request->all())));
+        $record->update($this->attributes($request->validate($this->rules($record, $request->all()))));
 
         return response()->json($this->present($this->query()->findOrFail($id)));
     }

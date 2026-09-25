@@ -41,6 +41,11 @@ export async function deleteRow(path: string, id: number): Promise<void> {
   await apiClient.delete(`/api/${path}/${id}`)
 }
 
+export async function runMonitor(id: number): Promise<Row> {
+  const { data } = await apiClient.post<{ monitor: Row }>(`/api/monitors/${id}/run`)
+  return data.monitor
+}
+
 export async function importCsv(path: string, file: File): Promise<ImportResult> {
   const body = new FormData()
   body.append('file', file)

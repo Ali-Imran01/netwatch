@@ -1,6 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { entities } from '../inventory/entities'
+import { entities, entityUrl } from '../inventory/entities'
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   `block rounded px-3 py-2 text-sm ${isActive ? 'bg-gray-900 text-white' : 'text-gray-700 hover:bg-gray-200'}`
@@ -16,11 +16,17 @@ export default function Layout() {
           <NavLink to="/" end className={linkClass}>
             Dashboard
           </NavLink>
-          <p className="px-3 pt-4 pb-1 text-xs font-medium uppercase text-gray-400">Inventory</p>
-          {entities.map((e) => (
-            <NavLink key={e.path} to={`/inventory/${e.path}`} className={linkClass}>
-              {e.title}
-            </NavLink>
+          {(['Inventory', 'Monitoring'] as const).map((group) => (
+            <div key={group}>
+              <p className="px-3 pt-4 pb-1 text-xs font-medium uppercase text-gray-400">{group}</p>
+              {entities
+                .filter((e) => e.group === group)
+                .map((e) => (
+                  <NavLink key={e.path} to={entityUrl(e)} className={linkClass}>
+                    {e.title}
+                  </NavLink>
+                ))}
+            </div>
           ))}
         </div>
         <div className="mt-auto border-t border-gray-200 pt-4 text-sm">
