@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['incident_id', 'from_state', 'to_state', 'user_id', 'note', 'created_at'])]
+#[Fillable(['incident_id', 'type', 'from_state', 'to_state', 'user_id', 'note', 'created_at'])]
 class IncidentEvent extends Model
 {
     public $timestamps = false;

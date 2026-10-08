@@ -334,3 +334,76 @@ it('exports the RFO as a PDF once resolved, and refuses while the incident is op
     $response = $this->get("/api/incidents/{$done->id}/rfo")->assertOk()->assertHeader('content-type', 'application/pdf');
     expect(substr($response->getContent(), 0, 4))->toBe('%PDF');
 });
+
+// ---- assignee and notes
+
+it('gives an unowned incident to whoever acknowledges it, and leaves an existing owner alone', function () {
+    $me = noc();
+    $unowned = Incident::factory()->create();
+    $owned = Incident::factory()->create(['assignee_id' => User::factory()->create(['role' => UserRole::Engineer])->id]);
+
+    $this->postJson("/api/incidents/{$unowned->id}/transition", ['to' => 'acknowledged'])->assertOk()->assertJsonPath('assignee.id', $me->id);
+    $this->postJson("/api/incidents/{$owned->id}/transition", ['to' => 'acknowledged'])->assertOk()->assertJsonPath('assignee.id', $owned->assignee_id);
+
+    $telegram = Incident::factory()->create();
+    service()->transition($telegram, IncidentState::Acknowledged); // no user, like a Telegram button press
+    expect($telegram->refresh()->assignee_id)->toBeNull();
+});
+
+it('assigns, reassigns and unassigns, writing each change to the timeline', function () {
+    noc();
+    $other = User::factory()->create(['role' => UserRole::Admin, 'name' => 'Aisha']);
+    $incident = Incident::factory()->create();
+
+    $this->putJson("/api/incidents/{$incident->id}/assignee", ['assignee_id' => $other->id])->assertOk()
+        ->assertJsonPath('assignee.name', 'Aisha')->assertJsonPath('events.0.type', 'assignment')->assertJsonPath('events.0.note', 'Assigned to Aisha.');
+    $this->putJson("/api/incidents/{$incident->id}/assignee", ['assignee_id' => $other->id])->assertOk(); // same owner: nothing new to record
+    expect($incident->events()->count())->toBe(1);
+
+    $this->putJson("/api/incidents/{$incident->id}/assignee", ['assignee_id' => null])->assertOk()->assertJsonPath('assignee', null);
+    expect($incident->events()->reorder('id', 'desc')->first()->note)->toBe('Unassigned.')
+        ->and($incident->refresh()->state)->toBe(IncidentState::Detected); // owning is not a state change
+});
+
+it('only lets admins and engineers own an incident, and only they can assign', function () {
+    noc();
+    $viewer = User::factory()->create(['role' => UserRole::Viewer]);
+    $incident = Incident::factory()->create();
+
+    $this->putJson("/api/incidents/{$incident->id}/assignee", ['assignee_id' => $viewer->id])->assertUnprocessable()->assertJsonValidationErrors('assignee_id');
+    $this->putJson("/api/incidents/{$incident->id}/assignee", ['assignee_id' => 9999])->assertUnprocessable();
+    $this->putJson("/api/incidents/{$incident->id}/assignee", [])->assertUnprocessable(); // the field must be sent, even as null
+
+    $this->getJson('/api/incidents/assignees')->assertOk()->assertJsonMissing(['id' => $viewer->id])->assertJsonFragment(['id' => auth()->id()]);
+
+    $this->actingAs($viewer);
+    $this->putJson("/api/incidents/{$incident->id}/assignee", ['assignee_id' => null])->assertForbidden();
+});
+
+it('adds notes to the timeline without moving the state, and keeps a closed incident frozen', function () {
+    $me = noc();
+    $incident = Incident::factory()->create(['state' => IncidentState::Investigating]);
+
+    $this->postJson("/api/incidents/{$incident->id}/notes", ['note' => 'Provider says a card was replaced.'])->assertOk()
+        ->assertJsonPath('state', 'investigating')->assertJsonPath('events.0.type', 'note')->assertJsonPath('events.0.user', $me->name)
+        ->assertJsonPath('events.0.note', 'Provider says a card was replaced.');
+    $this->postJson("/api/incidents/{$incident->id}/notes", ['note' => ''])->assertUnprocessable()->assertJsonValidationErrors('note');
+    $this->postJson("/api/incidents/{$incident->id}/notes", ['note' => str_repeat('x', 2001)])->assertUnprocessable();
+
+    $closed = Incident::factory()->create(['state' => IncidentState::Closed]);
+    $this->postJson("/api/incidents/{$closed->id}/notes", ['note' => 'Too late.'])->assertUnprocessable();
+    $this->putJson("/api/incidents/{$closed->id}/assignee", ['assignee_id' => $me->id])->assertUnprocessable();
+    expect($closed->events()->count())->toBe(0);
+
+    $this->actingAs(User::factory()->create(['role' => UserRole::Viewer]));
+    $this->postJson("/api/incidents/{$incident->id}/notes", ['note' => 'Not allowed.'])->assertForbidden();
+});
+
+it('still exports the RFO PDF when the timeline has notes and assignments', function () {
+    $me = noc();
+    $incident = Incident::factory()->create(['state' => IncidentState::Resolved, 'rfo_summary' => 'Done.']);
+    service()->addNote($incident, $me, 'Spoke to the provider.');
+    service()->assign($incident, $me, $me);
+
+    $this->get("/api/incidents/{$incident->id}/rfo")->assertOk()->assertHeader('content-type', 'application/pdf');
+});

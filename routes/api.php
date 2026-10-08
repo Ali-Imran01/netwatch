@@ -33,10 +33,13 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::post('monitors/{id}/run', [MonitorController::class, 'run'])->whereNumber('id')->middleware('throttle:heavy');
     Route::get('circuits/{id}/sla', [CircuitController::class, 'sla'])->whereNumber('id');
     Route::get('incidents/summary', [IncidentController::class, 'summary']);
+    Route::get('incidents/assignees', [IncidentController::class, 'assignees']);
     Route::get('incidents', [IncidentController::class, 'index']);
     Route::get('incidents/{id}', [IncidentController::class, 'show'])->whereNumber('id');
     Route::put('incidents/{id}', [IncidentController::class, 'update'])->whereNumber('id');
     Route::post('incidents/{id}/transition', [IncidentController::class, 'transition'])->whereNumber('id');
+    Route::post('incidents/{id}/notes', [IncidentController::class, 'note'])->whereNumber('id');
+    Route::put('incidents/{id}/assignee', [IncidentController::class, 'assign'])->whereNumber('id');
     Route::get('incidents/{id}/rfo', [IncidentController::class, 'rfo'])->whereNumber('id')->middleware('throttle:heavy');
     Route::post('alert-channels/{id}/test', [AlertChannelController::class, 'test'])->whereNumber('id')->middleware('throttle:heavy');
     Route::get('monitors/{id}/history', [MonitorController::class, 'history'])->whereNumber('id');

@@ -35,6 +35,12 @@ class Incident extends Model
         return $this->belongsTo(Monitor::class);
     }
 
+    /** @return BelongsTo<User, $this> */
+    public function assignee(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assignee_id');
+    }
+
     /** @return BelongsTo<Circuit, $this> */
     public function circuit(): BelongsTo
     {

@@ -12,6 +12,8 @@ export const stateLabel: Record<string, string> = {
 }
 
 export interface IncidentEvent {
+  /** state = a move between states; note and assignment sit on the timeline without changing the state. */
+  type: 'state' | 'note' | 'assignment'
   id: number
   from_state: string | null
   to_state: string
@@ -26,6 +28,7 @@ export interface Incident extends Row {
   severity: string
   monitor: { id: number; name: string } | null
   circuit: { id: number; name: string } | null
+  assignee: Assignee | null
   allowed_next: string[]
   events?: IncidentEvent[]
 }
@@ -79,4 +82,23 @@ export function duration(seconds: number | null | undefined): string {
   if (seconds >= 3600) return `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`
   if (seconds >= 60) return `${Math.floor(seconds / 60)}m ${seconds % 60}s`
   return `${seconds}s`
+}
+
+export interface Assignee {
+  id: number
+  name: string
+}
+
+/** People an incident can be given to (admins and engineers). */
+export async function listAssignees(): Promise<Assignee[]> {
+  return (await apiClient.get<Assignee[]>('/api/incidents/assignees')).data
+}
+
+/** null takes the incident back to unassigned. */
+export async function assignIncident(id: number, assigneeId: number | null): Promise<Incident> {
+  return (await apiClient.put<Incident>(`/api/incidents/${id}/assignee`, { assignee_id: assigneeId })).data
+}
+
+export async function addIncidentNote(id: number, note: string): Promise<Incident> {
+  return (await apiClient.post<Incident>(`/api/incidents/${id}/notes`, { note })).data
 }

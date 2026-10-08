@@ -193,6 +193,12 @@ parameters:
 			path: app/Http/Controllers/Api/IncidentController.php
 
 		-
+			message: '#^Strict comparison using \=\=\= between string and App\\Enums\\IncidentState\:\:Closed will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: app/Services/IncidentService.php
+
+		-
 			message: '#^Dead catch \- Illuminate\\Database\\QueryException is never thrown in the try block\.$#'
 			identifier: catch.neverThrown
 			count: 1
