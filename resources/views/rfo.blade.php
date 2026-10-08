@@ -54,7 +54,7 @@
         @foreach ($events as $e)
             <tr>
                 <td>{{ $e->created_at->utc()->format('Y-m-d H:i:s') }}</td>
-                <td>{{ $e->from_state ? ucfirst($e->from_state->value).' → ' : '' }}{{ ucfirst($e->to_state->value) }}</td>
+                <td>{{ $e->type === 'state' ? ($e->from_state ? ucfirst($e->from_state->value).' → ' : '').ucfirst($e->to_state->value) : ucfirst($e->type) }}</td>
                 <td>{{ $e->user?->name ?? 'System' }}</td>
                 <td>{{ $e->note }}</td>
             </tr>

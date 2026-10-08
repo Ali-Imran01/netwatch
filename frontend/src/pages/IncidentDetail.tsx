@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { apiError } from '../api/inventory'
-import { downloadRfo, duration, getIncident, saveIncident, stateLabel, transitionIncident, type Incident } from '../api/incidents'
+import { addIncidentNote, assignIncident, downloadRfo, duration, getIncident, listAssignees, saveIncident, stateLabel, transitionIncident, type Assignee, type Incident } from '../api/incidents'
 import { SeverityChip, StateChip } from '../components/Chip'
 import { Icon } from '../components/Icon'
 import { Skeleton } from '../components/Skeleton'
@@ -31,6 +31,8 @@ export default function IncidentDetail() {
 
   const [incident, setIncident] = useState<Incident | null>(null)
   const [note, setNote] = useState('')
+  const [noteText, setNoteText] = useState('')
+  const [assignees, setAssignees] = useState<Assignee[]>([])
   const [form, setForm] = useState<Record<string, string>>({})
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
@@ -46,6 +48,10 @@ export default function IncidentDetail() {
   }, [incidentId])
 
   useEffect(load, [load])
+
+  useEffect(() => {
+    if (canWrite) listAssignees().then(setAssignees).catch(() => setAssignees([]))
+  }, [canWrite])
 
   async function run(action: () => Promise<unknown>, done?: string) {
     setBusy(true)
@@ -67,6 +73,16 @@ export default function IncidentDetail() {
     await transitionIncident(incidentId, to, note)
     setNote('')
   })
+
+  const assign = (assigneeId: number | null) => run(() => assignIncident(incidentId, assigneeId))
+
+  const addNote = (e: FormEvent) => {
+    e.preventDefault()
+    return run(async () => {
+      await addIncidentNote(incidentId, noteText.trim())
+      setNoteText('')
+    })
+  }
 
   const saveRfo = (e: FormEvent) => {
     e.preventDefault()
@@ -117,6 +133,28 @@ export default function IncidentDetail() {
         <p className="mt-2 text-sm text-on-surface-variant">
           To acknowledge {duration(incident.time_to_acknowledge_s)} · to resolve {duration(incident.time_to_resolve_s)}
         </p>
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <span className="text-sm">
+            Owner: <span className="font-medium">{incident.assignee?.name ?? 'Unassigned'}</span>
+          </span>
+          {canWrite && !closed && (
+            <>
+              <select aria-label="Assign to" className="field mt-0 w-auto" value={incident.assignee?.id ?? ''} disabled={busy} onChange={(e) => assign(e.target.value ? Number(e.target.value) : null)}>
+                <option value="">Unassigned</option>
+                {assignees.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.name}
+                  </option>
+                ))}
+              </select>
+              {user && incident.assignee?.id !== user.id && (
+                <button disabled={busy} onClick={() => assign(user.id)} className="btn btn-text">
+                  Assign to me
+                </button>
+              )}
+            </>
+          )}
+        </div>
       </div>
 
       {error && <p className="rounded-xl bg-error-container p-3 text-sm text-on-error-container">{error}</p>}
@@ -140,17 +178,27 @@ export default function IncidentDetail() {
 
       <section>
         <h2 className="text-[22px] leading-7">Timeline</h2>
-        <ol className="mt-4 space-y-5">
+        {canWrite && !closed && (
+          <form onSubmit={addNote} className="card mt-4 p-4">
+            <label className="block text-sm font-medium text-on-surface-variant">
+              Add a note
+              <textarea rows={2} className="field" maxLength={2000} placeholder="What did you find, or who did you speak to?" value={noteText} onChange={(e) => setNoteText(e.target.value)} />
+            </label>
+            <button disabled={busy || !noteText.trim()} className="btn btn-tonal mt-3">
+              Add note
+            </button>
+          </form>
+        )}
+        <ol className="mt-5 space-y-5">
           {incident.events?.map((e) => (
-            <li key={e.id} className="relative pl-8 text-sm before:absolute before:top-1.5 before:left-1 before:size-3 before:rounded-full before:bg-primary after:absolute after:top-5 after:bottom-[-1.25rem] after:left-[0.6rem] after:w-0.5 after:bg-outline-variant last:after:hidden">
+            <li key={e.id} className={`relative pl-8 text-sm before:absolute before:top-1.5 before:left-1 before:size-3 before:rounded-full ${e.type === 'state' ? 'before:bg-primary' : 'before:bg-outline'} after:absolute after:top-5 after:bottom-[-1.25rem] after:left-[0.6rem] after:w-0.5 after:bg-outline-variant last:after:hidden`}>
               <p className="font-medium">
-                {e.from_state ? `${stateLabel[e.from_state]} → ` : ''}
-                {stateLabel[e.to_state]}
+                {e.type === 'note' ? 'Note' : e.type === 'assignment' ? 'Owner changed' : `${e.from_state ? `${stateLabel[e.from_state]} → ` : ''}${stateLabel[e.to_state]}`}
               </p>
               <p className="text-xs text-on-surface-variant">
                 {new Date(e.created_at).toLocaleString()} · {e.user ?? 'System'}
               </p>
-              {e.note && <p className="mt-1 text-on-surface-variant">{e.note}</p>}
+              {e.note && <p className={`mt-1 whitespace-pre-wrap ${e.type === 'note' ? 'text-on-surface' : 'text-on-surface-variant'}`}>{e.note}</p>}
             </li>
           ))}
         </ol>

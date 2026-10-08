@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\IncidentSeverity;
 use App\Enums\IncidentState;
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\Incident;
+use App\Models\User;
 use App\Services\IncidentService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
@@ -25,6 +27,7 @@ class IncidentController extends Controller
             'severity' => $i->severity->value,
             'monitor' => $i->monitor?->only(['id', 'name']),
             'circuit' => $i->circuit?->only(['id', 'name']),
+            'assignee' => $i->assignee?->only(['id', 'name']),
             'opened_at' => $i->opened_at,
             'acknowledged_at' => $i->acknowledged_at,
             'resolved_at' => $i->resolved_at,
@@ -40,7 +43,7 @@ class IncidentController extends Controller
 
         if ($withEvents) {
             $data['events'] = $i->events()->with('user:id,name')->get()->map(fn ($e) => [
-                'id' => $e->id, 'from_state' => $e->from_state?->value, 'to_state' => $e->to_state->value,
+                'id' => $e->id, 'type' => $e->type, 'from_state' => $e->from_state?->value, 'to_state' => $e->to_state->value,
                 'user' => $e->user?->name, 'note' => $e->note, 'created_at' => $e->created_at,
             ]);
         }
@@ -53,7 +56,7 @@ class IncidentController extends Controller
         Gate::authorize('viewAny', Incident::class);
         $request->validate(['state' => ['sometimes', 'string'], 'monitor_id' => ['sometimes', 'integer']]);
 
-        $query = Incident::with(['monitor:id,name', 'circuit:id,name'])->latest('opened_at')->latest('id');
+        $query = Incident::with(['monitor:id,name', 'circuit:id,name', 'assignee:id,name'])->latest('opened_at')->latest('id');
         if ($request->input('state') === 'open') {
             $query->whereIn('state', IncidentState::openValues());
         } elseif ($request->filled('state')) {
@@ -68,7 +71,7 @@ class IncidentController extends Controller
 
     public function show(int $id): JsonResponse
     {
-        $incident = Incident::with(['monitor:id,name', 'circuit:id,name'])->findOrFail($id);
+        $incident = Incident::with(['monitor:id,name', 'circuit:id,name', 'assignee:id,name'])->findOrFail($id);
         Gate::authorize('view', $incident);
 
         return response()->json($this->present($incident, true));
@@ -102,6 +105,36 @@ class IncidentController extends Controller
         $service->transition($incident, IncidentState::from($input['to']), $request->user(), $input['note'] ?? null);
 
         return $this->show($id);
+    }
+
+    public function note(Request $request, int $id, IncidentService $service): JsonResponse
+    {
+        $incident = Incident::findOrFail($id);
+        Gate::authorize('update', $incident);
+
+        $service->addNote($incident, $request->user(), $request->validate(['note' => ['required', 'string', 'max:2000']])['note']);
+
+        return $this->show($id);
+    }
+
+    /** Owner of the incident: an admin or engineer, or null to unassign. */
+    public function assign(Request $request, int $id, IncidentService $service): JsonResponse
+    {
+        $incident = Incident::findOrFail($id);
+        Gate::authorize('update', $incident);
+
+        $input = $request->validate(['assignee_id' => ['present', 'nullable', 'integer', 'exists:users,id']]);
+        $service->assign($incident, $input['assignee_id'] ? User::findOrFail($input['assignee_id']) : null, $request->user());
+
+        return $this->show($id);
+    }
+
+    /** Who an incident can be given to, for the picker. */
+    public function assignees(): JsonResponse
+    {
+        Gate::authorize('viewAny', Incident::class);
+
+        return response()->json(User::whereIn('role', [UserRole::Admin, UserRole::Engineer])->orderBy('name')->get(['id', 'name']));
     }
 
     /** Edit severity, the provider's ticket number and the RFO text. A closed incident is a record and stays as written. */

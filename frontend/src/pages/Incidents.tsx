@@ -73,7 +73,7 @@ export default function Incidents() {
         <table className="w-full min-w-3xl text-left text-sm">
           <thead className="bg-surface text-xs tracking-wide text-on-surface-variant uppercase">
             <tr>
-              {['#', 'Incident', 'State', 'Severity', 'Opened', 'Ack', 'Resolve'].map((h) => (
+              {['#', 'Incident', 'State', 'Severity', 'Owner', 'Opened', 'Ack', 'Resolve'].map((h) => (
                 <th key={h} className="px-4 py-3 font-medium">
                   {h}
                 </th>
@@ -96,6 +96,7 @@ export default function Incidents() {
                 <td className="px-4 py-3">
                   <SeverityChip severity={i.severity} />
                 </td>
+                <td className="px-4 py-3">{i.assignee?.name ?? <span className="text-on-surface-variant">Unassigned</span>}</td>
                 <td className="px-4 py-3">{new Date(i.opened_at).toLocaleString()}</td>
                 <td className="px-4 py-3">{duration(i.time_to_acknowledge_s)}</td>
                 <td className="px-4 py-3">{duration(i.time_to_resolve_s)}</td>
@@ -103,14 +104,14 @@ export default function Incidents() {
             ))}
             {!page && !error && [0, 1, 2, 3, 4].map((n) => (
               <tr key={n} aria-hidden="true">
-                <td colSpan={7} className="px-4 py-3">
+                <td colSpan={8} className="px-4 py-3">
                   <Skeleton className="h-7 w-full" />
                 </td>
               </tr>
             ))}
             {page?.data.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-10 text-center text-on-surface-variant">
+                <td colSpan={8} className="px-4 py-10 text-center text-on-surface-variant">
                   {openOnly ? 'No open incidents. All quiet.' : 'No incidents yet.'}
                 </td>
               </tr>

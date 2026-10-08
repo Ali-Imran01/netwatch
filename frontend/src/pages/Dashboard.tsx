@@ -123,7 +123,7 @@ export default function Dashboard() {
               {openIncidents} open incident{openIncidents === 1 ? '' : 's'}
               {top ? ` · ${top.severity} · ${top.state}` : ''}
             </p>
-            {top && <p className="text-sm">{top.title} · open for {since(top.opened_at)}{top.acknowledged_at ? '' : ' · not yet acknowledged'}</p>}
+            {top && <p className="text-sm">{top.title} · open for {since(top.opened_at)} · {top.assignee ? `owner ${top.assignee.name}` : 'unassigned'}</p>}
           </div>
           <div className="flex flex-wrap gap-2">
             {top && canWrite && top.allowed_next?.includes('acknowledged') && (
