@@ -1,1 +1,68 @@
 @import "tailwindcss";
+
+/* Material Design 3 colour roles (blue seed). Use as bg-primary, text-on-surface-variant, border-outline-variant, … */
+@theme {
+  --font-sans: 'Roboto', system-ui, sans-serif;
+  --font-mono: 'Roboto Mono', ui-monospace, monospace;
+
+  --color-surface: #f8fafd;
+  --color-surface-container: #e9eef6;
+  --color-on-surface: #1f1f1f;
+  --color-on-surface-variant: #444746;
+  --color-outline: #747775;
+  --color-outline-variant: #c4c7c5;
+
+  --color-primary: #0b57d0;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #d3e3fd;
+  --color-on-primary-container: #001d35;
+
+  --color-error: #b3261e;
+  --color-error-container: #f9dedc;
+  --color-on-error-container: #410e0b;
+
+  --color-success: #146c2e;
+  --color-success-container: #c4eed0;
+  --color-on-success-container: #072711;
+
+  --color-warning-container: #ffe08c;
+  --color-on-warning-container: #261a00;
+
+  --color-neutral-container: #e1e3e1;
+}
+
+@layer base {
+  body {
+    @apply bg-surface font-sans text-on-surface antialiased;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-full px-6 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .btn-filled {
+    @apply bg-primary text-on-primary hover:bg-primary/90;
+  }
+  .btn-tonal {
+    @apply bg-primary-container text-on-primary-container hover:brightness-95;
+  }
+  .btn-outlined {
+    @apply border border-outline bg-transparent text-primary hover:bg-primary-container/40;
+  }
+  .btn-text {
+    @apply px-3 text-primary hover:bg-primary-container/40;
+  }
+  .btn-error {
+    @apply bg-error text-white hover:bg-error/90;
+  }
+  .card {
+    @apply rounded-2xl border border-outline-variant bg-white;
+  }
+  .field {
+    @apply mt-1 w-full rounded-lg border border-outline bg-white px-3 py-2 text-sm text-on-surface focus:border-primary focus:outline-2 focus:outline-primary disabled:bg-neutral-container/40;
+  }
+  .chip {
+    @apply inline-flex h-7 items-center rounded-lg px-3 text-xs font-medium whitespace-nowrap;
+  }
+}

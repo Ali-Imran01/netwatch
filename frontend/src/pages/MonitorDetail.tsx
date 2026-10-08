@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { Bar, CartesianGrid, ComposedChart, Legend, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { apiError, type Row } from '../api/inventory'
 import { apiClient } from '../api/client'
 import { fetchHistory, type HistoryPoint, type Range } from '../api/monitors'
+import { Icon } from '../components/Icon'
+import { Skeleton } from '../components/Skeleton'
 
 const ranges: { value: Range; label: string; note: string }[] = [
   { value: '1h', label: '1 hour', note: 'every check' },
@@ -34,50 +36,66 @@ export default function MonitorDetail() {
   const total = points?.reduce((n, p) => n + p.checks, 0) ?? 0
 
   return (
-    <div>
-      <Link to="/" className="text-sm text-gray-500 hover:text-gray-900">← Status</Link>
-      <h1 className="mt-2 text-2xl font-semibold text-gray-900">{monitor?.name ?? 'Monitor'}</h1>
-      {monitor && (
-        <p className="mt-1 text-sm text-gray-500">
-          {monitor.type} · {monitor.target}{monitor.port ? `:${monitor.port}` : ''} · <span className="font-medium uppercase">{monitor.state}</span>
-        </p>
-      )}
-      {error && <p className="mt-4 rounded bg-red-50 p-3 text-sm text-red-700">{error}</p>}
+    <div className="mx-auto max-w-6xl space-y-6">
+      <div>
+        <Link to="/" className="btn btn-text -ml-3">
+          <Icon name="back" className="size-5" />
+          Status
+        </Link>
+        {monitor ? <h1 className="mt-2 text-[28px] leading-9">{monitor.name}</h1> : <Skeleton className="mt-2 h-9 w-64 max-w-full" />}
+        {monitor && (
+          <p className="mt-1 text-sm text-on-surface-variant">
+            <span className="font-mono">{monitor.type} · {monitor.target}{monitor.port ? `:${monitor.port}` : ''}</span>
+            <span className={`chip ml-3 uppercase ${monitor.state === 'down' ? 'bg-error-container text-on-error-container' : monitor.state === 'up' ? 'bg-success-container text-on-success-container' : 'bg-neutral-container'}`}>{monitor.state}</span>
+          </p>
+        )}
+      </div>
+      {error && <p className="rounded-xl bg-error-container p-3 text-sm text-on-error-container">{error}</p>}
 
-      <div className="mt-6 flex items-center gap-2">
-        {ranges.map((r) => (
-          <button
-            key={r.value}
-            onClick={() => {
-              setPoints(null)
-              setRange(r.value)
-            }}
-            className={`rounded px-3 py-1 text-sm ${range === r.value ? 'bg-gray-900 text-white' : 'border border-gray-300 hover:bg-gray-100'}`}
-          >
-            {r.label}
-          </button>
-        ))}
-        <span className="ml-2 text-xs text-gray-500">{ranges.find((r) => r.value === range)?.note}</span>
+      <div className="flex flex-wrap items-center gap-3">
+        <div role="group" aria-label="Time range" className="inline-flex h-10 overflow-hidden rounded-full border border-outline text-sm font-medium">
+          {ranges.map((r, i) => (
+            <button
+              key={r.value}
+              aria-pressed={range === r.value}
+              onClick={() => {
+                setPoints(null)
+                setRange(r.value)
+              }}
+              className={`px-4 ${i > 0 ? 'border-l border-outline' : ''} ${range === r.value ? 'bg-primary-container text-on-primary-container' : 'hover:bg-surface-container'}`}
+            >
+              {r.label}
+            </button>
+          ))}
+        </div>
+        <span className="text-xs text-on-surface-variant">{ranges.find((r) => r.value === range)?.note}</span>
       </div>
 
-      <div className="mt-4 h-80 rounded border border-gray-200 bg-white p-4">
-        {points && points.length === 0 && <p className="text-sm text-gray-500">No data for this range yet. Rollups appear once a 5-minute bucket has closed.</p>}
+      <div className="card h-80 p-4">
+        {points === null && !error && (
+          <div role="status" aria-label="Loading chart" className="h-full">
+            <Skeleton className="h-full w-full rounded-xl" />
+          </div>
+        )}
+        {points && points.length === 0 && <p className="text-sm text-on-surface-variant">No data for this range yet. Rollups appear once a 5-minute bucket has closed.</p>}
         {points && points.length > 0 && (
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={points}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <ComposedChart data={points}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e1e3e1" />
               <XAxis dataKey="t" tickFormatter={fmt} minTickGap={40} fontSize={12} />
               <YAxis unit=" ms" fontSize={12} width={64} />
+              <YAxis yAxisId="failed" orientation="right" allowDecimals={false} fontSize={12} width={32} />
               <Tooltip labelFormatter={(t) => new Date(String(t)).toLocaleString()} />
               <Legend />
-              <Line type="monotone" dataKey="avg" name="Average" stroke="#059669" dot={false} connectNulls />
-              {range !== '1h' && <Line type="monotone" dataKey="p95" name="p95" stroke="#d97706" dot={false} connectNulls />}
-            </LineChart>
+              <Bar yAxisId="failed" dataKey="failures" name="Failed checks" fill="#b3261e" />
+              <Line type="monotone" dataKey="avg" name="Average" stroke="#0b57d0" strokeWidth={2} dot={false} connectNulls />
+              {range !== '1h' && <Line type="monotone" dataKey="p95" name="p95" stroke="#b26a00" strokeWidth={2} dot={false} connectNulls />}
+            </ComposedChart>
           </ResponsiveContainer>
         )}
       </div>
       {points && total > 0 && (
-        <p className="mt-3 text-sm text-gray-600">
+        <p className="text-sm text-on-surface-variant">
           {failed} failed of {total} checks in this range ({(((total - failed) / total) * 100).toFixed(2)}% success).
         </p>
       )}

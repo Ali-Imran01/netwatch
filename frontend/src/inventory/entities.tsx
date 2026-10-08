@@ -175,11 +175,11 @@ export const entities: Entity[] = [
         header: 'State',
         render: (r) =>
           !r.enabled ? (
-            <span className="text-gray-400">Disabled</span>
+            <span className="chip bg-neutral-container text-on-surface-variant">Disabled</span>
           ) : r.in_maintenance ? (
-            <span className="font-medium text-sky-700">Maintenance</span>
+            <span className="chip bg-primary-container text-on-primary-container">Maintenance</span>
           ) : r.state === 'unknown' ? null : (
-            <span className={r.state === 'up' ? 'font-medium text-emerald-700' : 'font-medium text-red-600'}>{r.state === 'up' ? 'Up' : 'Down'}</span>
+            <span className={`chip ${r.state === 'up' ? 'bg-success-container text-on-success-container' : 'bg-error-container text-on-error-container'}`}>{r.state === 'up' ? 'Up' : 'Down'}</span>
           ),
       },
       { header: 'Latency', render: (r) => (r.last_latency_ms === null ? null : `${r.last_latency_ms} ms`) },
@@ -230,7 +230,7 @@ export const entities: Entity[] = [
         header: 'SLA (30d)',
         render: (r) =>
           r.sla_30d?.availability === null || r.sla_30d === undefined ? null : (
-            <span className={r.sla_30d.meets_target ? 'font-medium text-emerald-700' : 'font-medium text-red-600'}>{r.sla_30d.availability}%</span>
+            <span className={`chip ${r.sla_30d.meets_target ? 'bg-success-container text-on-success-container' : 'bg-error-container text-on-error-container'}`}>{r.sla_30d.availability}%</span>
           ),
       },
     ],
@@ -254,7 +254,7 @@ export const entities: Entity[] = [
       { header: 'Ends', render: (r) => new Date(r.ends_at).toLocaleString() },
       {
         header: 'Status',
-        render: (r) => <span className={r.status === 'active' ? 'font-medium text-sky-700' : r.status === 'done' ? 'text-gray-400' : ''}>{r.status}</span>,
+        render: (r) => <span className={`chip ${r.status === 'active' ? 'bg-primary-container text-on-primary-container' : r.status === 'done' ? 'bg-neutral-container text-on-surface-variant' : 'border border-outline-variant'}`}>{r.status}</span>,
       },
       { header: 'Ref', render: (r) => r.provider_ref },
     ],

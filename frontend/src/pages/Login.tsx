@@ -30,46 +30,46 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4 rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
-        <h1 className="text-xl font-semibold text-gray-900">Sign in to NetWatch</h1>
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <form onSubmit={handleSubmit} className="card w-full max-w-sm space-y-4 p-8">
+        <h1 className="text-2xl">Sign in to NetWatch</h1>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="rounded-xl bg-error-container p-3 text-sm text-on-error-container">{error}</p>}
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+          <label htmlFor="email" className="block text-sm font-medium text-on-surface-variant">Email</label>
           <input
             id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="field"
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+          <label htmlFor="password" className="block text-sm font-medium text-on-surface-variant">Password</label>
           <input
             id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+            className="field"
           />
         </div>
 
         <button
           type="submit"
           disabled={submitting}
-          className="w-full rounded-md bg-gray-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
+          className="btn btn-filled w-full"
         >
           {submitting ? 'Signing in…' : 'Sign in'}
         </button>
 
         {showDemo && (
-          <div className="rounded-md bg-sky-50 p-3 text-sm text-sky-900">
+          <div className="rounded-xl bg-primary-container/60 p-3 text-sm text-on-primary-container">
             <p className="font-medium">Public demo (read-only)</p>
             <p className="mt-1">Simulated carrier network; nothing here is real.</p>
             <button
@@ -78,7 +78,7 @@ export default function Login() {
                 setEmail(demo.email)
                 setPassword(demo.password)
               }}
-              className="mt-2 underline"
+              className="mt-2 text-primary underline"
             >
               Fill in the demo account
             </button>
